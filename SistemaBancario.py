@@ -1,66 +1,102 @@
-menu = """
+banco = "Negans Bank (NB)"
+slogan = "The world leader in credit and banking"
+menu = """         Seja bem-vindo ao NB!
+[S] Sacar
+[D] Depositar
+[E] Consultar extrato
+[Q] Sair
 
-[d] Depositar
-[s] Sacar
-[e] Extrato
-[q] Sair
+Selecione uma operação: """
 
-=> """
+opcao = "Início"
+qtd_limite_saque = 3
+VALOR_LIMITE_SAQUE = 500.0
+saldo = 1500.0
+valor_saque = valor_deposito = 0
+historico_depositos = []
+historico_saques = []
+historico_saldos = [saldo]
 
-saldo = 0
-limite = 500
-extrato = ""
-numero_saques = 0
-LIMITE_SAQUES = 3
-
+# Dando início ao menu
 while True:
+    print("-" * 41)
+    print(f"{banco:^41}".upper())
+    print(f"{slogan:^41}")
+    print("-" * 41)
+    opcao = str(input(menu)).upper()
+    print("-" * 41)
 
-    opcao = input(menu)
+    if opcao == "S":
+        # Lógica de realização do saque
+        valor_saque = int(input("Valor do saque: R$ "))
+        print()
 
-    if opcao == "d":
-        valor = float(input("Informe o valor do depósito: "))
+        if qtd_limite_saque > 0:
+            if valor_saque <= VALOR_LIMITE_SAQUE:
+                if valor_saque <= saldo:
+                    qtd_limite_saque -= 1
+                    saldo -= valor_saque
+                    print("                SUCESSO!")
+                    print(f"       Saque de R$ {valor_saque:.2f} realizado")
 
-        if valor > 0:
-            saldo += valor
-            extrato += f"Depósito: R$ {valor:.2f}\n"
+                    # Lógica registro no extrato
+                    historico_saques.append(valor_saque)
 
+                else:
+                    print("                  ERRO!")
+                    print("      Valor indisponível para saque")
+            else:
+                print("                  ERRO!")
+                print("       Valor de saque indisponível")
         else:
-            print("Operação falhou! O valor informado é inválido.")
+            print("                  ERRO!")
+            print("        Limite de saques atingido")
 
-    elif opcao == "s":
-        valor = float(input("Informe o valor do saque: "))
+        print("\nRetornando ao menu...")
 
-        excedeu_saldo = valor > saldo
-
-        excedeu_limite = valor > limite
-
-        excedeu_saques = numero_saques >= LIMITE_SAQUES
-
-        if excedeu_saldo:
-            print("Operação falhou! Você não tem saldo suficiente.")
-
-        elif excedeu_limite:
-            print("Operação falhou! O valor do saque excede o limite.")
-
-        elif excedeu_saques:
-            print("Operação falhou! Número máximo de saques excedido.")
-
-        elif valor > 0:
-            saldo -= valor
-            extrato += f"Saque: R$ {valor:.2f}\n"
-            numero_saques += 1
-
+    elif opcao == "D":
+        # Lógica de realização do depósito
+        valor_deposito = int(input("Valor do depósito: R$ "))
+        if valor_deposito > 0:
+            saldo += valor_deposito
+            print("\n                SUCESSO!")
+            print(f"      Depósito de R$ {valor_deposito:.2f} realizado")
         else:
-            print("Operação falhou! O valor informado é inválido.")
+            print("\nValor de depósito inválido")
 
-    elif opcao == "e":
-        print("\n================ EXTRATO ================")
-        print("Não foram realizadas movimentações." if not extrato else extrato)
-        print(f"\nSaldo: R$ {saldo:.2f}")
-        print("==========================================")
+        print("\nRetornando ao menu...")
 
-    elif opcao == "q":
+        # Lógica registro no extrato
+        historico_depositos.append(valor_deposito)
+
+    elif opcao == "E":
+        print(f"\n{banco:^41}".upper())
+        print(f"{slogan:^41}")
+        print("-" * 41)
+        print("\n            Extrato da conta\n")
+        if len(historico_depositos) == 0 and len(historico_saques) == 0:
+            print("       Nenhuma operação realizada")
+            print("-" * 41)
+        else:
+            print(f"Saldo inicial: R$ {historico_saldos[0]:.2f}\n")
+        if len(historico_depositos) > 0:
+            print("depósitos".upper())
+            for deposito in historico_depositos:
+                print(f"R$ {deposito:.2f}")
+            print("-" * 41)
+        if len(historico_saques) > 0:
+            print("saques".upper())
+            for saque in historico_saques:
+                print(f"R$ {saque:.2f}")
+            print("-" * 41)
+        print(f"Saldo atual da conta: R$ {saldo:.2f}")
+        print(f"Saques diários restantes: {qtd_limite_saque}\n")
+
+    elif opcao == "Q":
+        print("      O GNB agradece a preferência!")
+        print()
         break
 
     else:
-        print("Operação inválida, por favor selecione novamente a operação desejada.")
+        print("   Operação inválida. Tente novamente")
+        print()
